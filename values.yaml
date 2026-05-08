@@ -1,4 +1,4 @@
-# values.yaml
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/values.yaml
 replicaCount: 2
 
 image:
@@ -21,3 +21,12 @@ hpa:
   minReplicas: 2
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
+
+# Configuración de Pruebas de Salud (Probes)
+probes:
+  liveness:
+    path: "/"
+    port: 80
+  readiness:
+    path: "/"
+    port: 80

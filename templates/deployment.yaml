@@ -6,7 +6,11 @@ metadata:
   labels:
     app: webserver
 spec:
+  # Solo define replicas estáticas si el HPA está APAGADO.
+  # Si el HPA está encendido, ArgoCD soltará el control de las réplicas.
+  {{- if not .Values.hpa.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: webserver
@@ -27,3 +31,30 @@ spec:
           limits:
             cpu: {{ .Values.resources.limits.cpu }}
             memory: {{ .Values.resources.limits.memory }}
+        
+        # El sensor que reinicia el contenedor si se congela
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.probes.liveness.path }}
+            port: {{ .Values.probes.liveness.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        
+        # El sensor que avisa cuando el contenedor ya puede recibir tráfico
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.probes.readiness.path }}
+            port: {{ .Values.probes.readiness.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        
+        # Montamos el ConfigMap en la ruta del HTML de Nginx
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+      
+      # Definimos el volumen que extrae los datos del ConfigMap
+      volumes:
+      - name: html-volume
+        configMap:
+          name: {{ .Release.Name }}-nginx-cm
