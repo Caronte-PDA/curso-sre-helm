@@ -1,0 +1,6 @@
+# Chart.yaml
+apiVersion: v2
+name: mi-nginx-chart
+description: Un Helm chart de aprendizaje para Nginx
+version: 0.1.0
+appVersion: "1.25.4"

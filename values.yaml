@@ -1,0 +1,9 @@
+# values.yaml
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.25.4"
+
+service:
+  port: 80
