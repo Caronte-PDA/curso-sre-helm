@@ -1,5 +1,5 @@
 # values.yaml
-replicaCount: 5
+replicaCount: 2
 
 image:
   repository: nginx
