@@ -30,8 +30,13 @@ probes:
     path: "/"
     port: 80
 
-# Nueva configuración de la puerta de enlace
 ingress:
   enabled: true
   className: "nginx"
   host: "srelab.local"
+
+# Nueva configuración para el disco duro persistente
+persistence:
+  enabled: true
+  size: "1Gi"
+  mountPath: "/var/www/uploads"

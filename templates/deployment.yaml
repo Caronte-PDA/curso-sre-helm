@@ -6,8 +6,6 @@ metadata:
   labels:
     app: webserver
 spec:
-  # Solo define replicas estáticas si el HPA está APAGADO.
-  # Si el HPA está encendido, ArgoCD soltará el control de las réplicas.
   {{- if not .Values.hpa.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -32,7 +30,6 @@ spec:
             cpu: {{ .Values.resources.limits.cpu }}
             memory: {{ .Values.resources.limits.memory }}
         
-        # El sensor que reinicia el contenedor si se congela
         livenessProbe:
           httpGet:
             path: {{ .Values.probes.liveness.path }}
@@ -40,7 +37,6 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         
-        # El sensor que avisa cuando el contenedor ya puede recibir tráfico
         readinessProbe:
           httpGet:
             path: {{ .Values.probes.readiness.path }}
@@ -48,13 +44,24 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         
-        # Montamos el ConfigMap en la ruta del HTML de Nginx
         volumeMounts:
+        # 1. El volumen de la página web (ConfigMap)
         - name: html-volume
           mountPath: /usr/share/nginx/html
+        # 2. El NUEVO volumen de datos persistentes
+        {{- if .Values.persistence.enabled }}
+        - name: data-volume
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- end }}
       
-      # Definimos el volumen que extrae los datos del ConfigMap
       volumes:
+      # 1. Definición del volumen del ConfigMap
       - name: html-volume
         configMap:
           name: {{ .Release.Name }}-nginx-cm
+      # 2. Definición del NUEVO volumen persistente (PVC)
+      {{- if .Values.persistence.enabled }}
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-nginx-pvc
+      {{- end }}
