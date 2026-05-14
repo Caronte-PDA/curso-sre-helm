@@ -22,7 +22,6 @@ hpa:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
 
-# Configuración de Pruebas de Salud (Probes)
 probes:
   liveness:
     path: "/"
@@ -30,3 +29,9 @@ probes:
   readiness:
     path: "/"
     port: 80
+
+# Nueva configuración de la puerta de enlace
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "srelab.local"
