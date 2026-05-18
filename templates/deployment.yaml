@@ -22,6 +22,14 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.service.port }}
+        
+        # INYECCIÓN DEL SECRETO COMO VARIABLES DE ENTORNO
+        {{- if .Values.database.enabled }}
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-db-credentials
+        {{- end }}
+
         resources:
           requests:
             cpu: {{ .Values.resources.requests.cpu }}
@@ -45,21 +53,17 @@ spec:
           periodSeconds: 10
         
         volumeMounts:
-        # 1. El volumen de la página web (ConfigMap)
         - name: html-volume
           mountPath: /usr/share/nginx/html
-        # 2. El NUEVO volumen de datos persistentes
         {{- if .Values.persistence.enabled }}
         - name: data-volume
           mountPath: {{ .Values.persistence.mountPath }}
         {{- end }}
       
       volumes:
-      # 1. Definición del volumen del ConfigMap
       - name: html-volume
         configMap:
           name: {{ .Release.Name }}-nginx-cm
-      # 2. Definición del NUEVO volumen persistente (PVC)
       {{- if .Values.persistence.enabled }}
       - name: data-volume
         persistentVolumeClaim:

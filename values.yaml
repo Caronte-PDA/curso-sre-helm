@@ -44,8 +44,14 @@ rbac:
   enabled: true
   developerUser: "dev-junior"
 
-# Nueva configuración: Tarea programada (Scraper Bursátil)
 scraperCron:
   enabled: true
   schedule: "*/5 * * * *"
   image: "python:3.9-alpine"
+
+# Nueva configuración: Credenciales de Base de Datos
+database:
+  enabled: true
+  name: "mascotapp_db"
+  user: "admin_backend"
+  password: "SuperSecretPassword2026!"
