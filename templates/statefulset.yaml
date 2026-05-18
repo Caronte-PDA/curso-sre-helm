@@ -1,0 +1,59 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/statefulset.yaml
+{{- if .Values.statefulDatabase.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-db-headless
+spec:
+  # clusterIP: None lo convierte en un Headless Service
+  clusterIP: None
+  ports:
+  - port: 3306
+  selector:
+    app: database
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-db
+spec:
+  serviceName: {{ .Release.Name }}-db-headless
+  replicas: {{ .Values.statefulDatabase.replicas }}
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.11
+        # Consumiendo el secreto que creamos en la Fase 12
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-credentials
+              key: DB_PASSWORD
+        - name: MARIADB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-credentials
+              key: DB_NAME
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql
+  # El orquestador de discos: crea un PVC único por cada réplica
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+{{- end }}

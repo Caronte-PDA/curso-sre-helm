@@ -77,6 +77,10 @@ tolerations:
     value: "sre-admin"
     effect: "NoSchedule"
 
-# Nueva configuración: Cortafuegos de Red (Network Policy)
 networkPolicy:
   enabled: true
+
+# Nueva configuración: Base de Datos con Identidad
+statefulDatabase:
+  enabled: true
+  replicas: 2
