@@ -67,7 +67,13 @@ sidecar:
   enabled: true
   image: "busybox:1.28"
 
-# Nueva configuración: Exigencias de Hardware del Nodo
 nodeConfig:
   enabled: true
   requireSSD: true
+
+# Nueva configuración: Pase VIP para entrar a nodos restringidos
+tolerations:
+  - key: "uso"
+    operator: "Equal"
+    value: "sre-admin"
+    effect: "NoSchedule"

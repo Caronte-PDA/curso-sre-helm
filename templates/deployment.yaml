@@ -17,10 +17,15 @@ spec:
       labels:
         app: webserver
     spec:
-      # REGLA DE POSICIONAMIENTO: Solo jugar en canchas con SSD
       {{- if .Values.nodeConfig.enabled }}
       nodeSelector:
         hardware: ssd
+      {{- end }}
+
+      # EL PASE VIP: Permite saltarse la restricción del nodo
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- if .Values.initContainer.enabled }}
