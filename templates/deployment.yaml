@@ -17,13 +17,21 @@ spec:
       labels:
         app: webserver
     spec:
+      # EL PRECALENTAMIENTO: Contenedores que corren antes de la aplicación principal
+      {{- if .Values.initContainer.enabled }}
+      initContainers:
+      - name: init-check
+        image: "{{ .Values.initContainer.image }}"
+        command: {{ toYaml .Values.initContainer.command | nindent 8 }}
+      {{- end }}
+
+      # EL PARTIDO PRINCIPAL: Nuestra aplicación web
       containers:
       - name: nginx-container
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.service.port }}
         
-        # INYECCIÓN DEL SECRETO COMO VARIABLES DE ENTORNO
         {{- if .Values.database.enabled }}
         envFrom:
         - secretRef:

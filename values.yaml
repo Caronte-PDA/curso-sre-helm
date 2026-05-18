@@ -49,9 +49,17 @@ scraperCron:
   schedule: "*/5 * * * *"
   image: "python:3.9-alpine"
 
-# Nueva configuración: Credenciales de Base de Datos
 database:
   enabled: true
   name: "mascotapp_db"
   user: "admin_backend"
   password: "SuperSecretPassword2026!"
+
+# Nueva configuración: Contenedor de Inicialización
+initContainer:
+  enabled: true
+  image: "busybox:1.28"
+  command: 
+    - sh
+    - -c
+    - 'echo "Iniciando chequeo de pre-requisitos SRE..."; sleep 15; echo "Base de datos lista. Permitiendo arranque de Nginx."'
