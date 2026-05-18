@@ -71,9 +71,12 @@ nodeConfig:
   enabled: true
   requireSSD: true
 
-# Nueva configuración: Pase VIP para entrar a nodos restringidos
 tolerations:
   - key: "uso"
     operator: "Equal"
     value: "sre-admin"
     effect: "NoSchedule"
+
+# Nueva configuración: Cortafuegos de Red (Network Policy)
+networkPolicy:
+  enabled: true

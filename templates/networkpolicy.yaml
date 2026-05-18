@@ -1,0 +1,24 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/networkpolicy.yaml
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-firewall
+spec:
+  # A quién protege este muro (a nuestro Nginx)
+  podSelector:
+    matchLabels:
+      app: webserver
+  # Qué tipo de tráfico controlamos (Ingreso/Entrada)
+  policyTypes:
+  - Ingress
+  ingress:
+  # REGLA: Solo permitir tráfico si viene del Ingress Controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+{{- end }}
