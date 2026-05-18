@@ -35,8 +35,12 @@ ingress:
   className: "nginx"
   host: "srelab.local"
 
-# Nueva configuración para el disco duro persistente
 persistence:
   enabled: true
   size: "1Gi"
   mountPath: "/var/www/uploads"
+
+# Nueva configuración de Accesos y Permisos
+rbac:
+  enabled: true
+  developerUser: "dev-junior"
