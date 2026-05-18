@@ -40,7 +40,12 @@ persistence:
   size: "1Gi"
   mountPath: "/var/www/uploads"
 
-# Nueva configuración de Accesos y Permisos
 rbac:
   enabled: true
   developerUser: "dev-junior"
+
+# Nueva configuración: Tarea programada (Scraper Bursátil)
+scraperCron:
+  enabled: true
+  schedule: "*/5 * * * *"
+  image: "python:3.9-alpine"
