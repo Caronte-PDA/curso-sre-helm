@@ -17,7 +17,6 @@ spec:
       labels:
         app: webserver
     spec:
-      # EL PRECALENTAMIENTO: Contenedores que corren antes de la aplicación principal
       {{- if .Values.initContainer.enabled }}
       initContainers:
       - name: init-check
@@ -25,8 +24,8 @@ spec:
         command: {{ toYaml .Values.initContainer.command | nindent 8 }}
       {{- end }}
 
-      # EL PARTIDO PRINCIPAL: Nuestra aplicación web
       containers:
+      # JUGADOR 1: El Delantero Centro (Nginx)
       - name: nginx-container
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
@@ -67,6 +66,20 @@ spec:
         - name: data-volume
           mountPath: {{ .Values.persistence.mountPath }}
         {{- end }}
+        # Nginx escribe sus logs aquí
+        - name: shared-logs
+          mountPath: /var/log/nginx
+
+      # JUGADOR 2: El Socio (Sidecar Log Reader)
+      {{- if .Values.sidecar.enabled }}
+      - name: log-reader-sidecar
+        image: "{{ .Values.sidecar.image }}"
+        # Lee los logs que Nginx está escribiendo
+        command: ["/bin/sh", "-c", "tail -n+1 -F /var/log/nginx/access.log"]
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log/nginx
+      {{- end }}
       
       volumes:
       - name: html-volume
@@ -77,3 +90,6 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-nginx-pvc
       {{- end }}
+      # El disco duro efímero que ambos jugadores comparten
+      - name: shared-logs
+        emptyDir: {}

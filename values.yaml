@@ -55,7 +55,6 @@ database:
   user: "admin_backend"
   password: "SuperSecretPassword2026!"
 
-# Nueva configuración: Contenedor de Inicialización
 initContainer:
   enabled: true
   image: "busybox:1.28"
@@ -63,3 +62,8 @@ initContainer:
     - sh
     - -c
     - 'echo "Iniciando chequeo de pre-requisitos SRE..."; sleep 15; echo "Base de datos lista. Permitiendo arranque de Nginx."'
+
+# Nueva configuración: Nuestro socio táctico (Sidecar)
+sidecar:
+  enabled: true
+  image: "busybox:1.28"
