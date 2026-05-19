@@ -1,0 +1,33 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/daemonset.yaml
+{{- if .Values.monitoringAgent.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-node-monitor
+  labels:
+    app: node-monitor
+spec:
+  selector:
+    matchLabels:
+      app: node-monitor
+  template:
+    metadata:
+      labels:
+        app: node-monitor
+    spec:
+      # PASE VIP: Para poder monitorear los nodos restringidos
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      containers:
+      - name: metrics-exporter
+        image: {{ .Values.monitoringAgent.image }}
+        # Simulamos un proceso que recolecta métricas del servidor infinito
+        command: ["/bin/sh", "-c", "while true; do echo 'Recolectando métricas del nodo físico...'; sleep 10; done"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+{{- end }}

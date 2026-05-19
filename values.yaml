@@ -80,7 +80,11 @@ tolerations:
 networkPolicy:
   enabled: true
 
-# Nueva configuración: Base de Datos con Identidad
 statefulDatabase:
   enabled: true
   replicas: 2
+
+# Nueva configuración: Agente de monitoreo global
+monitoringAgent:
+  enabled: true
+  image: "busybox:1.28"
