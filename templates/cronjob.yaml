@@ -5,15 +5,20 @@ kind: CronJob
 metadata:
   name: {{ .Release.Name }}-bolsa-scraper
 spec:
-  # El calendario de ejecución
   schedule: "{{ .Values.scraperCron.schedule }}"
-  # Historial: Cuántos pods exitosos y fallidos guardar para revisar logs
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
+          # --- INICIO DEL PASE VIP ---
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          # --- FIN DEL PASE VIP ---
+          
           containers:
           - name: scraper
             image: {{ .Values.scraperCron.image }}
@@ -21,6 +26,5 @@ spec:
             - /bin/sh
             - -c
             - "echo 'Iniciando conexion a la Bolsa de Santiago...'; sleep 2; echo 'Calculando market share...'; sleep 2; echo 'Extraccion exitosa. Datos listos para la presentacion gerencial.'"
-          # A diferencia de un web server, si el job termina bien, NO queremos que se reinicie
           restartPolicy: OnFailure
 {{- end }}
