@@ -1,0 +1,13 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/pdb.yaml
+{{- if .Values.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-nginx-pdb
+spec:
+  # Exigimos que SIEMPRE haya al menos 1 Pod respondiendo tráfico
+  minAvailable: {{ .Values.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app: webserver
+{{- end }}

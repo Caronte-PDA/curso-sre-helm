@@ -3,7 +3,6 @@ replicaCount: 2
 
 image:
   repository: nginx
-  # VOLVEMOS A LA FORMACIÓN ESTABLE
   tag: "1.25.4"
 
 service:
@@ -88,3 +87,8 @@ statefulDatabase:
 monitoringAgent:
   enabled: true
   image: "busybox:1.28"
+
+# Nueva configuración: Seguro de Alta Disponibilidad
+pdb:
+  enabled: true
+  minAvailable: 1
