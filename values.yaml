@@ -3,8 +3,8 @@ replicaCount: 2
 
 image:
   repository: nginx
-  # ¡ATENCIÓN! Inyectando un error a propósito para la prueba
-  tag: "9.99.9-error-fatal"
+  # VOLVEMOS A LA FORMACIÓN ESTABLE
+  tag: "1.25.4"
 
 service:
   port: 80
