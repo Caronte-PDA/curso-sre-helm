@@ -88,7 +88,13 @@ monitoringAgent:
   enabled: true
   image: "busybox:1.28"
 
-# Nueva configuración: Seguro de Alta Disponibilidad
 pdb:
   enabled: true
   minAvailable: 1
+
+# Nueva configuración: Presupuesto máximo del clúster (Fair Play)
+namespaceQuota:
+  enabled: true
+  maxCPU: "1"
+  maxMemory: "1Gi"
+  maxPods: "15"

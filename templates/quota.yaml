@@ -1,0 +1,14 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/quota.yaml
+{{- if .Values.namespaceQuota.enabled }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .Release.Name }}-fair-play-quota
+spec:
+  hard:
+    # La suma estricta de las peticiones (requests) de CPU y Memoria de todos los contenedores
+    requests.cpu: {{ .Values.namespaceQuota.maxCPU }}
+    requests.memory: {{ .Values.namespaceQuota.maxMemory }}
+    # Tope máximo de jugadores (Pods) simultáneos en la cancha
+    pods: {{ .Values.namespaceQuota.maxPods }}
+{{- end }}
