@@ -3,7 +3,8 @@ replicaCount: 2
 
 image:
   repository: nginx
-  tag: "1.25.4"
+  # ¡ATENCIÓN! Inyectando un error a propósito para la prueba
+  tag: "9.99.9-error-fatal"
 
 service:
   port: 80
@@ -84,7 +85,6 @@ statefulDatabase:
   enabled: true
   replicas: 2
 
-# Nueva configuración: Agente de monitoreo global
 monitoringAgent:
   enabled: true
   image: "busybox:1.28"
