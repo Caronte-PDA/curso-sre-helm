@@ -16,13 +16,15 @@ spec:
     metadata:
       labels:
         app: webserver
+      # EL SENSOR DE CAMBIOS: Detecta modificaciones en el ConfigMap
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       {{- if .Values.nodeConfig.enabled }}
       nodeSelector:
         hardware: ssd
       {{- end }}
 
-      # EL PASE VIP: Permite saltarse la restricción del nodo
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}

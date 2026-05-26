@@ -40,6 +40,10 @@ persistence:
   size: "1Gi"
   mountPath: "/var/www/uploads"
 
+rbac:
+  enabled: true
+  developerUser: "dev-junior"
+
 scraperCron:
   enabled: true
   schedule: "*/5 * * * *"
@@ -94,7 +98,6 @@ namespaceQuota:
   maxMemory: "1Gi"
   maxPods: "15"
 
-# Configuración de Seguridad: Identidad del desarrollador
-rbac:
-  enabled: true
-  developerUser: "dev-junior"
+# Nueva Configuración: Táctica del partido en vivo
+appConfig:
+  mensaje: "SRE Lab: Formación Inicial 4-3-3"
