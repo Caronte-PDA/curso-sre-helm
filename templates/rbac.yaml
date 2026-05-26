@@ -1,27 +1,33 @@
 # ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/rbac.yaml
 {{- if .Values.rbac.enabled }}
+# 1. Creamos la credencial del usuario
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.rbac.developerUser }}
+---
+# 2. Definimos las reglas del juego (Solo mirar, no tocar)
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Release.Name }}-readonly-role
-# Aquí definimos las reglas del juego
+  name: {{ .Release.Name }}-viewer-role
 rules:
-- apiGroups: [""] # El grupo principal de K8s
-  resources: ["pods", "pods/log"]
-  verbs: ["get", "list", "watch"] # Solo mirar, no tocar
+- apiGroups: ["", "apps"]
+  resources: ["pods", "deployments", "services", "statefulsets"]
+  verbs: ["get", "watch", "list"]
 ---
+# 3. Asignamos el rol a la credencial
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .Release.Name }}-readonly-binding
-# A quién le damos el rol
+  name: {{ .Release.Name }}-viewer-binding
 subjects:
-- kind: User
-  name: {{ .Values.rbac.developerUser }}
-  apiGroup: rbac.authorization.k8s.io
-# Qué rol le estamos dando
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-{{ .Values.rbac.developerUser }}
+  # Si no especificamos namespace en Helm, asumimos 'default'
+  namespace: default
 roleRef:
   kind: Role
-  name: {{ .Release.Name }}-readonly-role
+  name: {{ .Release.Name }}-viewer-role
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
