@@ -42,15 +42,15 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         
-        # LA CAMISA DE FUERZA: Security Context
+        # LA CAMISA DE FUERZA (Ajustada para que Nginx no colapse)
         {{- if .Values.securityOptions.enabled }}
         securityContext:
-          # Prohibe tajantemente usar comandos como 'su' o 'sudo'
           allowPrivilegeEscalation: false
           capabilities:
-            # Elimina todos los permisos especiales del kernel de Linux
             drop:
-            - ALL
+            # Quitamos la capacidad de enviar paquetes crudos/pings, 
+            # pero le dejamos lo necesario para usar el puerto 80
+            - NET_RAW
         {{- end }}
 
         {{- if .Values.database.enabled }}
