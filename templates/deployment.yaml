@@ -21,6 +21,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       {{- if .Values.nodeConfig.enabled }}
+      serviceAccountName: {{ .Release.Name }}-nginx-sa
       nodeSelector:
         hardware: ssd
       {{- end }}
