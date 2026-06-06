@@ -6,9 +6,7 @@ metadata:
   labels:
     app: webserver
 spec:
-  # LÍMITE DE HISTORIAL: Solo conservamos las últimas 2 tácticas en la banca
   revisionHistoryLimit: 2
-  
   {{- if not .Values.hpa.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -52,6 +50,14 @@ spec:
       - name: init-check
         image: "{{ .Values.initContainer.image }}"
         command: {{ toYaml .Values.initContainer.command | nindent 8 }}
+        # SOLUCIÓN: Presupuesto explícito para el Init Container
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "16Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
       {{- end }}
 
       containers:
@@ -113,6 +119,14 @@ spec:
         volumeMounts:
         - name: shared-logs
           mountPath: /var/log/nginx
+        # SOLUCIÓN: Presupuesto explícito para el Sidecar Container
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "16Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
       {{- end }}
       
       volumes:
