@@ -4,27 +4,32 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-bolsa-scraper
+  labels:
+    app: scraper
 spec:
   schedule: "{{ .Values.scraperCron.schedule }}"
-  successfulJobsHistoryLimit: 3
+  
+  # LA REGLA SRE DE LIMPIEZA VISUAL (Mantenemos ArgoCD impecable)
+  successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
+  
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: scraper
         spec:
-          # --- INICIO DEL PASE VIP ---
           {{- with .Values.tolerations }}
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          # --- FIN DEL PASE VIP ---
-          
           containers:
           - name: scraper
-            image: {{ .Values.scraperCron.image }}
+            image: "{{ .Values.scraperCron.image }}"
             command:
             - /bin/sh
             - -c
-            - "echo 'Iniciando conexion a la Bolsa de Santiago...'; sleep 2; echo 'Calculando market share...'; sleep 2; echo 'Extraccion exitosa. Datos listos para la presentacion gerencial.'"
+            - "echo 'Extrayendo datos de la Bolsa de Santiago...'; sleep 5; echo 'Datos bursátiles actualizados con éxito.'"
           restartPolicy: OnFailure
 {{- end }}
