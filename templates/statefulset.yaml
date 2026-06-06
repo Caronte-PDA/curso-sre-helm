@@ -1,20 +1,11 @@
 # ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/statefulset.yaml
 {{- if .Values.statefulDatabase.enabled }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-db-headless
-spec:
-  clusterIP: None
-  ports:
-  - port: 3306
-  selector:
-    app: database
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
+  labels:
+    app: database
 spec:
   serviceName: {{ .Release.Name }}-db-headless
   replicas: {{ .Values.statefulDatabase.replicas }}
@@ -26,7 +17,6 @@ spec:
       labels:
         app: database
     spec:
-      # --- INICIO DEL PASE VIP Y REGLAS DE NODO ---
       {{- if .Values.nodeConfig.enabled }}
       nodeSelector:
         hardware: ssd
@@ -36,11 +26,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # --- FIN DEL PASE VIP ---
-
+      
       containers:
       - name: mariadb
-        image: mariadb:10.11
+        image: "mariadb:10.11"
+        ports:
+        - containerPort: 3306
         env:
         - name: MARIADB_ROOT_PASSWORD
           valueFrom:
@@ -52,12 +43,19 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-db-credentials
               key: DB_NAME
-        ports:
-        - containerPort: 3306
         volumeMounts:
         - name: db-data
           mountPath: /var/lib/mysql
-  
+          
+        # SOLUCIÓN: Contrato de recursos para MariaDB
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+          limits:
+            cpu: "100m"
+            memory: "256Mi"
+            
   volumeClaimTemplates:
   - metadata:
       name: db-data
