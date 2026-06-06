@@ -6,6 +6,9 @@ metadata:
   labels:
     app: webserver
 spec:
+  # LÍMITE DE HISTORIAL: Solo conservamos las últimas 2 tácticas en la banca
+  revisionHistoryLimit: 2
+  
   {{- if not .Values.hpa.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -29,11 +32,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      # LA DISTRIBUCIÓN TÁCTICA: Pod Anti-Affinity
       {{- if .Values.affinityOptions.enabled }}
       affinity:
         podAntiAffinity:
-          # Regla suave: "Prefiero que los separes si es posible"
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
             podAffinityTerm:
@@ -43,7 +44,6 @@ spec:
                   operator: In
                   values:
                   - webserver
-              # Esta es la llave que define qué es un "servidor distinto" (su hostname)
               topologyKey: kubernetes.io/hostname
       {{- end }}
 
