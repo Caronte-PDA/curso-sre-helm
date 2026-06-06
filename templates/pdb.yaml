@@ -5,7 +5,7 @@ kind: PodDisruptionBudget
 metadata:
   name: {{ .Release.Name }}-nginx-pdb
 spec:
-  # Exigimos que SIEMPRE haya al menos 1 Pod respondiendo tráfico
+  # REGLA DE ORO: Siempre debe haber al menos esta cantidad de Pods vivos
   minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
