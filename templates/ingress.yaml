@@ -1,21 +1,33 @@
+# ~/Documentos/terra/k8s-master/mi-nginx-chart/templates/ingress.yaml
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-nginx-ingress
+  labels:
+    app: webserver
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # LA REGLA SRE: Si alguien entra por HTTP, expúlsalo hacia HTTPS
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
+  
+  # LA ACREDITACIÓN DE LA FIFA (Cifrado TLS)
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ .Release.Name }}-tls-secret
+    
   rules:
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Release.Name }}-nginx-svc
-                port:
-                  number: {{ .Values.service.port }}
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-nginx-svc
+            port:
+              number: {{ .Values.service.port }}
 {{- end }}
