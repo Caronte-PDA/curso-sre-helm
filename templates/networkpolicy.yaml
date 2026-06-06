@@ -3,22 +3,26 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-firewall
+  name: {{ .Release.Name }}-db-firewall
 spec:
-  # A quién protege este muro (a nuestro Nginx)
+  # 1. ¿A QUIÉN PROTEGE ESTE MURO? A la Base de Datos
   podSelector:
     matchLabels:
-      app: webserver
-  # Qué tipo de tráfico controlamos (Ingreso/Entrada)
+      app: database
+  
+  # 2. ¿QUÉ TIPO DE TRÁFICO VAMOS A FILTRAR? El tráfico de entrada (Ingress)
   policyTypes:
   - Ingress
+  
+  # 3. LAS REGLAS DE LA PUERTA VIP:
   ingress:
-  # REGLA: Solo permitir tráfico si viene del Ingress Controller
   - from:
-    - namespaceSelector:
+    # Solo permitimos la entrada si vienes de un Pod con esta etiqueta exacta
+    - podSelector:
         matchLabels:
-          kubernetes.io/metadata.name: ingress-nginx
+          app: webserver
+    # Y solo te dejamos tocar este puerto específico
     ports:
     - protocol: TCP
-      port: {{ .Values.service.port }}
+      port: 3306
 {{- end }}
