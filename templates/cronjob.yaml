@@ -9,7 +9,7 @@ metadata:
 spec:
   schedule: "{{ .Values.scraperCron.schedule }}"
   
-  # LA REGLA SRE DE LIMPIEZA VISUAL (Mantenemos ArgoCD impecable)
+  # LA REGLA SRE DE LIMPIEZA VISUAL
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   
@@ -31,5 +31,15 @@ spec:
             - /bin/sh
             - -c
             - "echo 'Extrayendo datos de la Bolsa de Santiago...'; sleep 5; echo 'Datos bursátiles actualizados con éxito.'"
+            
+            # SOLUCIÓN: El contrato de Fair Play para pasar la cuota del Namespace
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "32Mi"
+              limits:
+                cpu: "20m"
+                memory: "64Mi"
+                
           restartPolicy: OnFailure
 {{- end }}
