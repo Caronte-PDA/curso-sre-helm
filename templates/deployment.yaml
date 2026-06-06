@@ -16,7 +16,6 @@ spec:
     metadata:
       labels:
         app: webserver
-      # EL SENSOR DE CAMBIOS: Detecta modificaciones en el ConfigMap
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
@@ -43,6 +42,17 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         
+        # LA CAMISA DE FUERZA: Security Context
+        {{- if .Values.securityOptions.enabled }}
+        securityContext:
+          # Prohibe tajantemente usar comandos como 'su' o 'sudo'
+          allowPrivilegeEscalation: false
+          capabilities:
+            # Elimina todos los permisos especiales del kernel de Linux
+            drop:
+            - ALL
+        {{- end }}
+
         {{- if .Values.database.enabled }}
         envFrom:
         - secretRef:

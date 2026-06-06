@@ -98,6 +98,9 @@ namespaceQuota:
   maxMemory: "1Gi"
   maxPods: "15"
 
-# Nueva Configuración: Táctica del partido en vivo
 appConfig:
-  mensaje: "SRE Lab: Formación Inicial 3-4-3"
+  mensaje: "SRE Lab: Formación Ofensiva 3-4-3"
+
+# Nueva Configuración: Blindaje a nivel de Kernel
+securityOptions:
+  enabled: true
