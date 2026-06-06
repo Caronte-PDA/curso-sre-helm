@@ -29,6 +29,24 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
+      # LA DISTRIBUCIÓN TÁCTICA: Pod Anti-Affinity
+      {{- if .Values.affinityOptions.enabled }}
+      affinity:
+        podAntiAffinity:
+          # Regla suave: "Prefiero que los separes si es posible"
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - webserver
+              # Esta es la llave que define qué es un "servidor distinto" (su hostname)
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+
       {{- if .Values.initContainer.enabled }}
       initContainers:
       - name: init-check
@@ -42,14 +60,11 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         
-        # LA CAMISA DE FUERZA (Ajustada para que Nginx no colapse)
         {{- if .Values.securityOptions.enabled }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            # Quitamos la capacidad de enviar paquetes crudos/pings, 
-            # pero le dejamos lo necesario para usar el puerto 80
             - NET_RAW
         {{- end }}
 

@@ -101,6 +101,9 @@ namespaceQuota:
 appConfig:
   mensaje: "SRE Lab: Formación Ofensiva 3-4-3"
 
-# Nueva Configuración: Blindaje a nivel de Kernel
 securityOptions:
+  enabled: true
+
+# Nueva Configuración: Reglas de separación espacial
+affinityOptions:
   enabled: true
